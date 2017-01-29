@@ -73,9 +73,21 @@ And set the `PasswordAuthentication` to yes - so that you can ssh into the new u
 
     **Note**: Alternatively you can use [these instructions](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) to do the above steps easily with one command - `ssh-copy-id`
 
-### 5. Configure the uncomplicated firewall(ufw)
+### 6. Configure the uncomplicated firewall(ufw)
 
-* 
+* Check the ufw status
+`sudo ufw status`
+* Deny all incoming and allow all outgoing connections
+`sudo ufw default deny incoming`
+`sudo ufw default allow outgoing`
+* Allow all incoming ssh connections
+`sudo ufw allow ssh`
+* Allow all incoming http connections
+`sudo ufw allow www`
+* Allow incoming udp packets on port 123(ntp)
+`sudo ufw allow 123/udp`
+
+
 ### Problems faced and their solutions
 
 #### 1. `apt` not working
