@@ -34,7 +34,7 @@ And set the `PasswordAuthentication` to yes - so that you can ssh into the new u
 `$ sudo apt-get update`
 
 * Install newer versions of the packages you have.
-`$ sudo apt-get upgrade`
+`$ sudo apt-get upgrade`<sup>[1](#1-.-apt-not-working)</sup>
 
 
 ### Problems faced and their solutions
