@@ -87,6 +87,81 @@ And set the `PasswordAuthentication` to yes - so that you can ssh into the new u
 * Allow incoming udp packets on port 123(ntp)
 `sudo ufw allow 123/udp`
 
+### 7. Download and install Item Catalog application
+
+#### 7.1 Install and configure git
+
+1. Install git
+
+`sudo apt-get install git`
+
+2. Configure
+
+```
+git config --global user.name "Your Name"
+
+git config --global user.email "youremail@domain.com"
+
+git config --list (To view the set name and email in the earlier step)  
+```
+
+
+#### 7.2 Install and configure apache
+
+1. Install apache web server
+
+`sudo apt-get install apache2`
+
+2. Open a browser and enter your public ip address. It should give a "Apache2 Ubuntu Default Page - It works".
+ 
+
+#### 7.3 Configure and deploy a simple flask application ( [Reference](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps) ) 
+
+1. Install and enable mod_wsgi
+```
+$ sudo apt-get install libapache2-mod-wsgi python-dev
+$ sudo a2enmod wsgi
+```
+
+2. Create a Flask app
+    a. Move to `/var/www` directory.
+    
+    `cd /var/www`
+    b. Create a folder eg. catalog and change to that directory
+    
+    `sudo mkdir catalog && cd catalog`
+    c. Again create a folder catalog which will contain all files of your application
+    
+    `sudo mkdir catalog && cd catalog`
+    d. Make necessary folders and files
+    
+    `sudo mkdir static templates`
+    
+Directory structure till now - 
+```
+|----catalog
+|---------catalog
+|--------------static
+|--------------templates
+```
+
+3. create the `__init__.py` file that will contain the flask application logic.
+
+`sudo nano __init__.py`
+
+Add following logic(basic flask app) and then save and close.- 
+```
+from flask import Flask
+app = Flask(__name__)
+@app.route("/")
+def hello():
+    return "Hello, I love Digital Ocean!"
+if __name__ == "__main__":
+    app.run()
+```
+ 
+
+
 
 ### Problems faced and their solutions
 
@@ -115,4 +190,44 @@ Error - `Could not get lock /var/lib/dpkg/lock`
 
 **Problem**: SSH session/instance timeout was too less.
 
+#### 4. Unable to open database file
 
+**Problem**: The catalog app couldn't locate the database file.
+
+**Solution**: Worked after moving the database file into `/tmp/`. If you face permission problem later, take a look at the next problem [(Problem 5)](5-attempt-to-write-a-read-only-database).
+
+#### 5. Attempt to write a read-only database
+
+**Problem**: (sqlite3.OperationalError) attempt to write a readonly database.
+
+**Solution**: 
+Give write permission to database file.
+```
+sudo chmod 666 /path/to/database/file.db
+```
+
+#### 6. Threading problem 
+
+**Problem**: `SQLite objects created in a thread can only be used in that same thread`
+
+**Solution**: mod_wsgi uses session threading internally. Following lines have to be added to handle threading.
+`from flask import scoped_session`
+`session = scoped_session(sessionmaker(bind=engine))`
+Note: [Reference](http://stackoverflow.com/questions/34009296/using-sqlalchemy-session-from-flask-raises-sqlite-objects-created-in-a-thread-c)
+
+#### 7. Facebook login redirect URL
+
+**Problem**: Facebook login didn't work even after setting auth redirect url to `http://ec2-xx-xx-xxx-xxx.us-west-2.compute.amazonaws.com/`
+
+**Solution**: After a lot of trial and error combinations with that URL, just pondered whether the public IP address - `http://xx.xx.xxx.xxx/` -  would work. And voila!
+
+#### 8. Google and facebook client secrets
+
+**Problem**: The application couldn't locate the JSON file.
+
+**Solution**: Worked after providing the absolute paths of both (Facebook as well as Google) JSON files in the application.
+
+
+### Extra 
+
+* Glances - System monitoring application (Dependency python-bottle)
