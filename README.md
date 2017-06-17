@@ -2,14 +2,18 @@
 
 ### 1. Setup development environment
 
-* Create a [new development environment](https://www.udacity.com/account#!/development_environment) provided by Udacity and Amazon.
-* Download the private key.
-* Move the private key into the folder `~/.ssh/`
-`$ mv ~/Downloads/udacity_key.rsa ~/.ssh/`
-* Set file permissions - only owner can read and right.
-`$ chmod 600 ~/.ssh/udacity_key.rsa`
-* SSH into your environment
-`$ ssh -i ~/.ssh/udacity_key.rsa root@<PUBLIC-IP-ADDRESS>`
+* Create a [new development environment](https://lightsail.aws.amazon.com) provided by Amazon.
+    * Create Amazon Web Service account if you don't have already and log in.
+    * Create an instance(OS only, Ubuntu), choose lowest tier one month free plan, name it and start the instance.
+    
+* To login using SSH -  
+    * Download the private key from your account's page(under the tab - SSH keys).
+    * Move the private key into the folder `~/.ssh/`
+    `$ mv ~/Downloads/lightsail.pem ~/.ssh/`
+    * Set file permissions - only owner can read and right.
+    `$ chmod 600 ~/.ssh/lightsail.pem`
+    * SSH into your environment with user `ubuntu`
+    `$ ssh -i ~/.ssh/lightsail.rsa ubuntu@<PUBLIC-IP-ADDRESS>`
 
 ### 2. User management
 
