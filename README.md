@@ -145,7 +145,7 @@ Directory structure till now -
 |--------------templates
 ```
 
-3. create the `__init__.py` file that will contain the flask application logic.
+3. Create the `__init__.py` file that will contain the flask application logic.
 
 `sudo nano __init__.py`
 
@@ -160,9 +160,175 @@ if __name__ == "__main__":
     app.run()
 ```
  
+4. Install Flask 
+    a. Install pip package installer.
+    `sudo apt-get install python-pip`
+    b. Install virtualenv
+    `sudo pip install virtualenv`
+    c. Set virtual environment 'venv'
+    `sudo virtualenv venv`
+    d. Give permissions to the new virtual environment
+    `sudo chmod -R 777 venv`
+    e. Activate the virtual environment
+    `source venv/bin/activate`
+    f. Install flask inside the virtual environment
+    `pip install flask`
+    g. Run the basic application
+    `python __init__.py`
+    It should display `Running on http://localhost:5000/`
+    
+    h. Deactivate
+    `deactivate`
 
+5. Configure and enable a new virtual host
 
+    a. Create a virtual host config file
+    `sudo nano /etc/apache2/sites-available/catalog.conf`
+    b. Add the following lines of code to the file and change ServerName to your cloud server's IP address.
+    ```
+    <VirtualHost *:80>
+      ServerName <public-ip-address>
+      ServerAdmin admin@<public-ip-address>
+      WSGIScriptAlias / /var/www/catalog/catalog.wsgi
+      <Directory /var/www/catalog/catalog/>
+          Order allow,deny
+          Allow from all
+      </Directory>
+      Alias /static /var/www/catalog/catalog/static
+      <Directory /var/www/catalog/catalog/static/>
+          Order allow,deny
+          Allow from all
+      </Directory>
+      ErrorLog ${APACHE_LOG_DIR}/error.log
+      LogLevel warn
+      CustomLog ${APACHE_LOG_DIR}/access.log combined
+    </VirtualHost>
+    ```
 
+    c. Enable the virtual host. 
+    `sudo a2ensite catalog.conf`
+    
+6. Create the `.wsgi` file
+    
+    a. Create wsgi file
+    ```
+    cd /var/www/catalog
+    sudo nano catalog.wsgi
+    ```
+    
+    b. Paste in the following lines of code.
+    ```
+     #!/usr/bin/python
+      import sys
+      import logging
+      logging.basicConfig(stream=sys.stderr)
+      sys.path.insert(0,"/var/www/catalog/")
+    
+      from catalog import app as application
+      application.secret_key = 'Add your secret key'
+    ```
+    
+    c. Restart apache.
+    ```
+    sudo service apache restart
+    ```
+    
+#### 7.4 Clone Item-Catalog application
+
+1. Clone project from Github
+```
+git clone https://github.com/nirajpandkar/item-catalog.git
+```
+
+2. Move all the content from item-catalog to `/var/www/catalog/catalog/`
+
+3. Make the `.git` folder inaccessible ([Reference](http://serverfault.com/a/527911))
+```
+$ cd /var/www/catalog
+$ sudo nano .htaccess
+```
+Paste the following in the file - `RedirectMatch 404 /\.git`
+
+#### 7.5 Install required packages for the application in venv
+
+```
+$ source venv/bin/activate
+$ pip install sqlalchemy
+$ pip install oauth2client
+$ pip install requests
+$ pip install httplib2
+```
+
+#### 7.6 Install and Configure PostgreSQL
+
+1. Install postgresql
+```
+$ sudo apt-get install postgresql postgresql-contrib
+```
+
+2. Check that no remote connections are allowed (default):
+```
+$ sudo nano /etc/postgresql/9.3/main/pg_hba.conf
+```
+
+3. Change the backend engine to postgres in database and application file - 
+```
+$ sudo nano database.py
+```
+
+While creating the engine put in - 
+`engine = create_engine('postgresql://<user>:<user-pwd>@localhost/<database>')`
+
+4. Create the needed user for psql.
+```
+sudo adduser catalog
+```
+
+5. Add the user to postgres with password and give appropriate rights
+    a.  Login to the default postgres user
+    ```
+    $ sudo su postgres
+    $ psql
+    ```
+    b. Create user with login role and password.
+    ```
+    # CREATE USER catalog WITH PASSWORD 'PWD-FOR-USER';
+    ```
+    c. Allow the user to create database tables.
+    ```
+    # ALTER USER catalog CREATEDB
+    ```
+    d. Check the current roles.
+    ```
+    # \du
+    ```
+6. Create database and ascribe appropriate privileges. 
+    a. Create database
+    ```
+    # CREATE DATABASE catalog WITH OWNER catalog;
+    ```
+    b. Connect to catalog database
+    ```
+    # \c catalog
+    ```
+    c. Revoke all rights.
+    ```
+    # REVOKE ALL ON SCHEMA public FROM public;
+    ```
+    d. Grant all rights to catalog user.
+    ```
+    # GRANT ALL ON SCHEMA public TO catalog;
+    ```
+    e. Exit from psql and catalog user.
+    ```
+    # \q
+    $ exit
+    ```
+    f. Create database schema.
+    ```
+    $ python database.py
+    ```
+    
 ### Problems faced and their solutions
 
 #### 1. `apt` not working
