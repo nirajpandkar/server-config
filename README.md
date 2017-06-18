@@ -124,17 +124,17 @@ $ sudo a2enmod wsgi
 ```
 
 2. Create a Flask app
+
     a. Move to `/var/www` directory.
-    
     `cd /var/www`
+    
     b. Create a folder eg. catalog and change to that directory
-    
     `sudo mkdir catalog && cd catalog`
-    c. Again create a folder catalog which will contain all files of your application
     
+    c. Again create a folder catalog which will contain all files of your application    
     `sudo mkdir catalog && cd catalog`
-    d. Make necessary folders and files
     
+    d. Make necessary folders and files   
     `sudo mkdir static templates`
     
 Directory structure till now - 
@@ -216,21 +216,21 @@ if __name__ == "__main__":
     sudo nano catalog.wsgi
     ```
     
-    b. Paste in the following lines of code.
+    b. Paste in the following lines of code. (Beware of false indentation when copying)
     ```
-     #!/usr/bin/python
-      import sys
-      import logging
-      logging.basicConfig(stream=sys.stderr)
-      sys.path.insert(0,"/var/www/catalog/")
+    #!/usr/bin/python
+    import sys
+    import logging
+    logging.basicConfig(stream=sys.stderr)
+    sys.path.insert(0,"/var/www/catalog/")
     
-      from catalog import app as application
-      application.secret_key = 'Add your secret key'
+    from catalog import app as application
+    application.secret_key = 'Add your secret key'
     ```
     
     c. Restart apache.
     ```
-    sudo service apache restart
+    sudo service apache2 restart
     ```
     
 #### 7.4 Clone Item-Catalog application
@@ -253,10 +253,10 @@ Paste the following in the file - `RedirectMatch 404 /\.git`
 
 ```
 $ source venv/bin/activate
-$ pip install sqlalchemy
-$ pip install oauth2client
-$ pip install requests
-$ pip install httplib2
+$ sudo pip install sqlalchemy
+$ sudo pip install oauth2client
+$ sudo pip install requests
+$ sudo pip install httplib2
 ```
 
 #### 7.6 Install and Configure PostgreSQL
@@ -268,23 +268,10 @@ $ sudo apt-get install postgresql postgresql-contrib
 
 2. Check that no remote connections are allowed (default):
 ```
-$ sudo nano /etc/postgresql/9.3/main/pg_hba.conf
+$ sudo nano /etc/postgresql/9.5/main/pg_hba.conf
 ```
 
-3. Change the backend engine to postgres in database and application file - 
-```
-$ sudo nano database.py
-```
-
-While creating the engine put in - 
-`engine = create_engine('postgresql://<user>:<user-pwd>@localhost/<database>')`
-
-4. Create the needed user for psql.
-```
-sudo adduser catalog
-```
-
-5. Add the user to postgres with password and give appropriate rights
+4. Add the user to postgres with password and give appropriate rights
     a.  Login to the default postgres user
     ```
     $ sudo su postgres
@@ -302,7 +289,7 @@ sudo adduser catalog
     ```
     # \du
     ```
-6. Create database and ascribe appropriate privileges. 
+5. Create database and ascribe appropriate privileges. 
     a. Create database
     ```
     # CREATE DATABASE catalog WITH OWNER catalog;
@@ -326,9 +313,25 @@ sudo adduser catalog
     ```
     f. Create database schema.
     ```
-    $ python database.py
+    $ python populate_database.py
+    ```
+    g. Rename the `ItemCatalog.py` file and run the app. (Delete the earlier `__init__.py` if you haven't already)
+    ```
+    $ mv ItemCatalog.py __init__.py
+    $ python __init__.py
     ```
     
+     Note: May need to `sudo pip install psycopg2`
+    
+### Changes required in the original Item Catalog project
+
+* Refer to [problem 8](#8-google-and-facebook-client-secrets)
+* Renaming `ItemCatalog.py` to `__init__.py`
+* For Google Auth - Add the public address to Authorized Javascript origin and server name(use `nslookup <IP-ADDRESS>`) to Authorized Redirect URIs.
+* For Facebook Auth - Add the public address to Valid Oauth Redirect URIs.
+
+Note: Don't forget `http://` in both the cases
+
 ### Problems faced and their solutions
 
 #### 1. `apt` not working
