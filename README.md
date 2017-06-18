@@ -1,5 +1,12 @@
 # Linux Server Configuration
 
+> Set up, secure and prep a linux server to host web applications.
+
+Item Catalog application is live at the address - http://ec2-52-55-6-94.compute-1.amazonaws.com/
+IP Address - 52.55.6.94
+
+**Note**: Serving two applications individually - Item Catalog and Portfolio. (Steps to shuffle between these two given [below](#serve-portfolio-website-item-catalog-application)) 
+
 ### 1. Setup development environment
 
 * Create a [new development environment](https://lightsail.aws.amazon.com) provided by Amazon.
@@ -430,6 +437,18 @@ $ sudo nano /etc/postgresql/9.5/main/pg_hba.conf
 * For Facebook Auth - Add the public address to Valid Oauth Redirect URIs. [Link](https://developers.facebook.com/)
 
 Note: Don't forget to include `http://` in both the cases
+
+
+### Serve Portfolio website/Item Catalog application
+
+* Enable `portfolio.conf` and disable `catalog.conf`
+```
+$ sudo a2ensite portfolio.conf
+$ sudo a2dissite catalog.conf
+$ sudo service apache2 reload
+```
+
+To serve Catalog application enable `catalog.conf` and disable `portfolio.conf`.
 
 ### Problems faced and their solutions
 
