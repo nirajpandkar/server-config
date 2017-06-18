@@ -5,7 +5,7 @@
 Item Catalog application is live at the address - http://ec2-52-55-6-94.compute-1.amazonaws.com/
 IP Address - 52.55.6.94
 
-**Note**: Serving two applications individually - Item Catalog and Portfolio. (Steps to shuffle between these two given [below](#serve-portfolio-website-item-catalog-application)) 
+**Note**: Serving two applications individually - Item Catalog and Portfolio. (Steps to shuffle between these two given [below](#serve-portfolio-websiteitem-catalog-application)) 
 
 ### 1. Setup development environment
 
