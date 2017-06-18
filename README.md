@@ -13,7 +13,7 @@
     * Set file permissions - only owner can read and right.
     `$ chmod 600 ~/.ssh/lightsail.pem`
     * SSH into your environment with user `ubuntu`
-    `$ ssh -i ~/.ssh/lightsail.rsa ubuntu@<PUBLIC-IP-ADDRESS>`
+    `$ ssh -i ~/.ssh/lightsail.pem ubuntu@<PUBLIC-IP-ADDRESS>`
 
 ### 2. Configure the uncomplicated firewall(ufw)
 
