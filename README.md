@@ -10,15 +10,15 @@
     * Download the private key from your account's page(under the tab - SSH keys).
     * Move the private key into the folder `~/.ssh/`
     
-    `$ mv ~/Downloads/lightsail.pem ~/.ssh/`
+        `$ mv ~/Downloads/lightsail.pem ~/.ssh/`
     
     * Set file permissions - only owner can read and right.
     
-    `$ chmod 600 ~/.ssh/lightsail.pem`
+        `$ chmod 600 ~/.ssh/lightsail.pem`
     
     * SSH into your environment with user `ubuntu`
     
-    `$ ssh -i ~/.ssh/lightsail.pem ubuntu@<PUBLIC-IP-ADDRESS>`
+        `$ ssh -i ~/.ssh/lightsail.pem ubuntu@<PUBLIC-IP-ADDRESS>`
 
 ### 2. Configure the uncomplicated firewall(ufw)
 
