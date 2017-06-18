@@ -18,72 +18,130 @@
 ### 2. Configure the uncomplicated firewall(ufw)
 
 * Check the ufw status
-`sudo ufw status`
+```
+$ sudo ufw status
+```
+
 * Deny all incoming and allow all outgoing connections
-`sudo ufw default deny incoming`
-`sudo ufw default allow outgoing`
+```
+$ sudo ufw default deny incoming
+$ sudo ufw default allow outgoing
+```
+
 * Allow all incoming ssh connections
-`sudo ufw allow ssh`
+```
+$ sudo ufw allow ssh
+```
+
 * Allow all incoming http connections
-`sudo ufw allow www`
+```
+$ sudo ufw allow www
+```
+
 * Allow incoming udp packets on port 123(ntp)
-`sudo ufw allow 123/udp`
+```
+$ sudo ufw allow 123/udp
+```
+
 * Allow all incoming ssh connections on port 2200
-`sudo ufw allow 2200/tcp`
-* Enable ufw rules
-`sudo ufw enable`
+```
+$ sudo ufw allow 2200/tcp
+```
+
+**Warning**: Please check all the rules before committing the next step. You could get locked out if ssh connections are not allowed.
+
+* Enable ufw rules 
+```
+$ sudo ufw enable
+```
 
 ### 3. User management
 
 * Create a new user.
-    `$ sudo adduser <new-user>`
+```
+$ sudo adduser grader
+```
+
 * Add user to the 'sudoers' list.
-    `$ nano /etc/sudoers.d/<new-user>`
-* Give the new user 'sudo' permissions by adding the following line to the above created file
-    `student ALL=(ALL) NOPASSWD:ALL`
+```
+$ nano /etc/sudoers.d/grader
+```
+* Give the new user 'sudo' permissions by adding the following line to the above created file.
+```
+grader ALL=(ALL) NOPASSWD:ALL
+```
     
 #### To SSH into the environment with the newly created user.
 
 * From the root login - 
-`$ nano /etc/ssh/sshd_config`
-And set the `PasswordAuthentication` to `yes` - so that you can ssh into the new user using the set password(for the time being)
+```
+$ nano /etc/ssh/sshd_config
+```
+
+And set the `PasswordAuthentication` to `yes` - so that you can ssh into the new user using the set password (for the time being).
+
 * To login in with the new user type in your local terminal(not the virtual machine)
-`$ ssh <new-user>@<PUBLIC-IP-ADDRESS>`
+```
+$ ssh <new-user>@<PUBLIC-IP-ADDRESS>
+```
     
 ### 4. Update and upgrade packages [[Reference](http://askubuntu.com/questions/94102/what-is-the-difference-between-apt-get-update-and-upgrade)]
 
 * Update the list of available packages and their versions.
-`$ sudo apt-get update`
+```
+$ sudo apt-get update
+```
+
 * Install newer versions of the packages you have.
-`$ sudo apt-get upgrade`<sup>[[1](#1-apt-not-working)]</sup>
+```
+$ sudo apt-get upgrade
+```
+
+**Note**: If you get `Could not get lock /var/lib/dpkg/lock` - [solution](#1-apt-not-working)
 
 ### 5. Configure local timezone to UTC [[Reference](http://askubuntu.com/questions/138423/how-do-i-change-my-timezone-to-utc-gmt)]
 
-* Execute `sudo dpkg-reconfigure tzdata`
-* In the interactive window select `None of the above`
-* In the menu select `UTC`
+* Execute 
+
+    `sudo dpkg-reconfigure tzdata`
+
+* In the interactive window select 
+
+    `None of the above`
+
+* In the menu select 
+
+    `UTC`
 
 ### 6. Secure server   `
 
 * Create SSH keys. 
     * Generate SSH key on local machine.
-    `$ ssh-keygen`
+    ```
+    $ ssh-keygen
+    ```
     * The default filename is id_rsa. You get a prompt to change it if you want.
     * Copy the output of the `.pub` file- 
-    `$ cat ~/.ssh/<filename>.pub`
+    ```
+    $ cat ~/.ssh/<filename>.pub
+    ```
     * On your virtual machine, if you don't already have a `~/.ssh` folder create one.
-    `$ mkdir ~/.ssh`
+    ```
+    $ mkdir ~/.ssh
+    ```
     * Create an `authorized_keys` file inside the `.ssh` directory.
-    `$ nano ~/.ssh/authorized_key`
+    ```
+    $ nano ~/.ssh/authorized_keys
+    ```
     * Paste the contents of `.pub` file you had copied in the earlier steps and save
     * Give appropriate permissions to the folder as well as the file - 
-        * `sudo chmod 700 ~/.ssh`
-        * `sudo chmod 644 ~/.ssh/authorized_keys`
+        * `$ sudo chmod 700 ~/.ssh`
+        * `$ sudo chmod 644 ~/.ssh/authorized_keys`
     * Open SSHD config
     `$ sudo nano /etc/ssh/sshd_config`
     * Change `PasswordAuthentication` to `no`.
-    * Now login with the new user - 
-    `ssh <new-user>@PUBLIC-IP-ADDRESS`
+    * Now login with the new user (from your local machine) - 
+    `$ ssh -i <path-to-filename> grader@PUBLIC-IP-ADDRESS`
 
     **Note**: Alternatively you can use [these instructions](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) to do the above steps easily with one command - `ssh-copy-id`
 
@@ -93,7 +151,9 @@ And set the `PasswordAuthentication` to `yes` - so that you can ssh into the new
 
 1. Install git
 
-`sudo apt-get install git`
+```
+sudo apt-get install git
+```
 
 2. Configure
 
@@ -110,9 +170,11 @@ git config --list (To view the set name and email in the earlier step)
 
 1. Install apache web server
 
-`sudo apt-get install apache2`
+```
+$sudo apt-get install apache2
+```
 
-2. Open a browser and enter your public ip address. It should give a "Apache2 Ubuntu Default Page - It works".
+2. Open a browser and enter your public ip address. It should give "Apache2 Ubuntu Default Page - It works".
  
 
 #### 7.3 Configure and deploy a simple flask application ( [Reference](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps) ) 
@@ -126,16 +188,24 @@ $ sudo a2enmod wsgi
 2. Create a Flask app
 
     a. Move to `/var/www` directory.
-    `cd /var/www`
+    ```
+    $ cd /var/www
+    ```
     
     b. Create a folder eg. catalog and change to that directory
-    `sudo mkdir catalog && cd catalog`
+    ```
+    $ sudo mkdir catalog && cd catalog
+    ```
     
     c. Again create a folder catalog which will contain all files of your application    
-    `sudo mkdir catalog && cd catalog`
+    ```
+    $ sudo mkdir catalog && cd catalog
+    ```
     
-    d. Make necessary folders and files   
-    `sudo mkdir static templates`
+    d. Make necessary folders and files
+    ```
+    $ sudo mkdir static templates
+    ```
     
 Directory structure till now - 
 ```
@@ -147,7 +217,9 @@ Directory structure till now -
 
 3. Create the `__init__.py` file that will contain the flask application logic.
 
-`sudo nano __init__.py`
+```
+$ sudo nano __init__.py
+```
 
 Add following logic(basic flask app) and then save and close.- 
 ```
@@ -162,28 +234,47 @@ if __name__ == "__main__":
  
 4. Install Flask 
     a. Install pip package installer.
-    `sudo apt-get install python-pip`
+    ```
+    $ sudo apt-get install python-pip
+    ```
+    
     b. Install virtualenv
-    `sudo pip install virtualenv`
+    ```
+    $ sudo pip install virtualenv
+    ```
     c. Set virtual environment 'venv'
-    `sudo virtualenv venv`
+    ```
+    $ sudo virtualenv venv
+    ```
     d. Give permissions to the new virtual environment
-    `sudo chmod -R 777 venv`
+    ```
+    $ sudo chmod -R 777 venv
+    ```
     e. Activate the virtual environment
-    `source venv/bin/activate`
+    ```
+    $ source venv/bin/activate
+    ```
     f. Install flask inside the virtual environment
-    `pip install flask`
+    ```
+    $ pip install flask
+    ```
     g. Run the basic application
-    `python __init__.py`
+    ```
+    $ python __init__.py
+    ```
     It should display `Running on http://localhost:5000/`
     
     h. Deactivate
-    `deactivate`
+    ```
+    $ deactivate
+    ```
 
 5. Configure and enable a new virtual host
 
     a. Create a virtual host config file
-    `sudo nano /etc/apache2/sites-available/catalog.conf`
+    
+    `$ sudo nano /etc/apache2/sites-available/catalog.conf`
+    
     b. Add the following lines of code to the file and change ServerName to your cloud server's IP address.
     ```
     <VirtualHost *:80>
@@ -206,7 +297,8 @@ if __name__ == "__main__":
     ```
 
     c. Enable the virtual host. 
-    `sudo a2ensite catalog.conf`
+    
+    `$ sudo a2ensite catalog.conf`
     
 6. Create the `.wsgi` file
     
@@ -239,6 +331,8 @@ if __name__ == "__main__":
 ```
 git clone https://github.com/nirajpandkar/item-catalog.git
 ```
+
+**Note**: Delete `__init.py__`.
 
 2. Move all the content from item-catalog to `/var/www/catalog/catalog/`
 
@@ -327,10 +421,10 @@ $ sudo nano /etc/postgresql/9.5/main/pg_hba.conf
 
 * Refer to [problem 8](#8-google-and-facebook-client-secrets)
 * Renaming `ItemCatalog.py` to `__init__.py`
-* For Google Auth - Add the public address to Authorized Javascript origin and server name(use `nslookup <IP-ADDRESS>`) to Authorized Redirect URIs.
-* For Facebook Auth - Add the public address to Valid Oauth Redirect URIs.
+* For Google Auth - Add the public address to Authorized Javascript origin and server name(use `nslookup <IP-ADDRESS>`) to Authorized Redirect URIs. [Link](https://console.cloud.google.com/apis/credentials)
+* For Facebook Auth - Add the public address to Valid Oauth Redirect URIs. [Link](https://developers.facebook.com/)
 
-Note: Don't forget `http://` in both the cases
+Note: Don't forget to include `http://` in both the cases
 
 ### Problems faced and their solutions
 
@@ -399,4 +493,4 @@ Note: [Reference](http://stackoverflow.com/questions/34009296/using-sqlalchemy-s
 
 ### Extra 
 
-* Glances - System monitoring application (Dependency python-bottle)
+* [Glances](https://nicolargo.github.io/glances/) - System monitoring application
