@@ -5,26 +5,26 @@
 Item Catalog application is live at the address - http://ec2-52-55-6-94.compute-1.amazonaws.com/
 IP Address - 52.55.6.94
 
-**Note**: Serving two applications individually - Item Catalog and Portfolio. (Steps to shuffle between these two given [below](#serve-portfolio-websiteitem-catalog-application)) 
+**Note**: Serving two applications individually - Item Catalog and Portfolio. (Steps to shuffle between these two given [below](#serve-portfolio-websiteitem-catalog-application))
 
 ### 1. Setup development environment
 
 * Create a [new development environment](https://lightsail.aws.amazon.com) provided by Amazon.
     * Create Amazon Web Service account if you don't have already and log in.
     * Create an instance(OS only, Ubuntu), choose lowest tier one month free plan, name it and start the instance.
-    
+
 * To login using SSH -  
     * Download the private key from your account's page(under the tab - SSH keys).
     * Move the private key into the folder `~/.ssh/`
-    
+
         `$ mv ~/Downloads/lightsail.pem ~/.ssh/`
-    
+
     * Set file permissions - only owner can read and right.
-    
+
         `$ chmod 600 ~/.ssh/lightsail.pem`
-    
+
     * SSH into your environment with user `ubuntu`
-    
+
         `$ ssh -i ~/.ssh/lightsail.pem ubuntu@<PUBLIC-IP-ADDRESS>`
 
 ### 2. Configure the uncomplicated firewall(ufw)
@@ -60,9 +60,14 @@ $ sudo ufw allow 123/udp
 $ sudo ufw allow 2200/tcp
 ```
 
+* Deny all incoming ssh connections on port 22
+```
+$ sudo ufw deny 22
+```
+
 **Warning**: Please check all the rules before committing the next step. You could get locked out if ssh connections are not allowed.
 
-* Enable ufw rules 
+* Enable ufw rules
 ```
 $ sudo ufw enable
 ```
@@ -82,10 +87,10 @@ $ nano /etc/sudoers.d/grader
 ```
 grader ALL=(ALL) NOPASSWD:ALL
 ```
-    
+
 #### To SSH into the environment with the newly created user.
 
-* From the root login - 
+* From the root login -
 ```
 $ nano /etc/ssh/sshd_config
 ```
@@ -96,7 +101,7 @@ And set the `PasswordAuthentication` to `yes` - so that you can ssh into the new
 ```
 $ ssh <new-user>@<PUBLIC-IP-ADDRESS>
 ```
-    
+
 ### 4. Update and upgrade packages [[Reference](http://askubuntu.com/questions/94102/what-is-the-difference-between-apt-get-update-and-upgrade)]
 
 * Update the list of available packages and their versions.
@@ -113,27 +118,27 @@ $ sudo apt-get upgrade
 
 ### 5. Configure local timezone to UTC [[Reference](http://askubuntu.com/questions/138423/how-do-i-change-my-timezone-to-utc-gmt)]
 
-* Execute 
+* Execute
 
     `sudo dpkg-reconfigure tzdata`
 
-* In the interactive window select 
+* In the interactive window select
 
     `None of the above`
 
-* In the menu select 
+* In the menu select
 
     `UTC`
 
 ### 6. Secure server   `
 
-* Create SSH keys. 
+* Create SSH keys.
     * Generate SSH key on local machine.
     ```
     $ ssh-keygen
     ```
     * The default filename is id_rsa. You get a prompt to change it if you want.
-    * Copy the output of the `.pub` file- 
+    * Copy the output of the `.pub` file-
     ```
     $ cat ~/.ssh/<filename>.pub
     ```
@@ -146,13 +151,13 @@ $ sudo apt-get upgrade
     $ nano ~/.ssh/authorized_keys
     ```
     * Paste the contents of `.pub` file you had copied in the earlier steps and save
-    * Give appropriate permissions to the folder as well as the file - 
+    * Give appropriate permissions to the folder as well as the file -
         * `$ sudo chmod 700 ~/.ssh`
         * `$ sudo chmod 644 ~/.ssh/authorized_keys`
     * Open SSHD config
     `$ sudo nano /etc/ssh/sshd_config`
     * Change `PasswordAuthentication` to `no`.
-    * Now login with the new user (from your local machine) - 
+    * Now login with the new user (from your local machine) -
     `$ ssh -i <path-to-filename> grader@PUBLIC-IP-ADDRESS`
 
     **Note**: Alternatively you can use [these instructions](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) to do the above steps easily with one command - `ssh-copy-id`
@@ -187,9 +192,9 @@ $sudo apt-get install apache2
 ```
 
 2. Open a browser and enter your public ip address. It should give "Apache2 Ubuntu Default Page - It works".
- 
 
-#### 7.3 Configure and deploy a simple flask application ( [Reference](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps) ) 
+
+#### 7.3 Configure and deploy a simple flask application ( [Reference](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps) )
 
 1. Install and enable mod_wsgi
 ```
@@ -203,23 +208,23 @@ $ sudo a2enmod wsgi
     ```
     $ cd /var/www
     ```
-    
+
     b. Create a folder eg. catalog and change to that directory
     ```
     $ sudo mkdir catalog && cd catalog
     ```
-    
+
     c. Again create a folder catalog which will contain all files of your application    
     ```
     $ sudo mkdir catalog && cd catalog
     ```
-    
+
     d. Make necessary folders and files
     ```
     $ sudo mkdir static templates
     ```
-    
-Directory structure till now - 
+
+Directory structure till now -
 ```
 |----catalog
 |---------catalog
@@ -233,7 +238,7 @@ Directory structure till now -
 $ sudo nano __init__.py
 ```
 
-Add following logic(basic flask app) and then save and close.- 
+Add following logic(basic flask app) and then save and close.-
 ```
 from flask import Flask
 app = Flask(__name__)
@@ -243,13 +248,13 @@ def hello():
 if __name__ == "__main__":
     app.run()
 ```
- 
-4. Install Flask 
+
+4. Install Flask
     a. Install pip package installer.
     ```
     $ sudo apt-get install python-pip
     ```
-    
+
     b. Install virtualenv
     ```
     $ sudo pip install virtualenv
@@ -275,7 +280,7 @@ if __name__ == "__main__":
     $ python __init__.py
     ```
     It should display `Running on http://localhost:5000/`
-    
+
     h. Deactivate
     ```
     $ deactivate
@@ -284,9 +289,9 @@ if __name__ == "__main__":
 5. Configure and enable a new virtual host
 
     a. Create a virtual host config file
-    
+
     `$ sudo nano /etc/apache2/sites-available/catalog.conf`
-    
+
     b. Add the following lines of code to the file and change ServerName to your cloud server's IP address.
     ```
     <VirtualHost *:80>
@@ -308,18 +313,18 @@ if __name__ == "__main__":
     </VirtualHost>
     ```
 
-    c. Enable the virtual host. 
-    
+    c. Enable the virtual host.
+
     `$ sudo a2ensite catalog.conf`
-    
+
 6. Create the `.wsgi` file
-    
+
     a. Create wsgi file
     ```
     cd /var/www/catalog
     sudo nano catalog.wsgi
     ```
-    
+
     b. Paste in the following lines of code. (Beware of false indentation when copying)
     ```
     #!/usr/bin/python
@@ -327,16 +332,16 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(stream=sys.stderr)
     sys.path.insert(0,"/var/www/catalog/")
-    
+
     from catalog import app as application
     application.secret_key = 'Add your secret key'
     ```
-    
+
     c. Restart apache.
     ```
     sudo service apache2 restart
     ```
-    
+
 #### 7.4 Clone Item-Catalog application
 
 1. Clone project from Github
@@ -395,7 +400,7 @@ $ sudo nano /etc/postgresql/9.5/main/pg_hba.conf
     ```
     # \du
     ```
-5. Create database and ascribe appropriate privileges. 
+5. Create database and ascribe appropriate privileges.
     a. Create database
     ```
     # CREATE DATABASE catalog WITH OWNER catalog;
@@ -426,9 +431,9 @@ $ sudo nano /etc/postgresql/9.5/main/pg_hba.conf
     $ mv ItemCatalog.py __init__.py
     $ python __init__.py
     ```
-    
+
      Note: May need to `sudo pip install psycopg2`
-    
+
 ### Changes required in the original Item Catalog project
 
 * Refer to [problem 8](#8-google-and-facebook-client-secrets)
@@ -454,7 +459,7 @@ To serve Catalog application enable `catalog.conf` and disable `portfolio.conf`.
 
 #### 1. `apt` not working
 
-**Problem**: While running `sudo apt-get upgrade`, the terminal had prompted me for configuration of some package which was never completed(because of intermittent internet connection). 
+**Problem**: While running `sudo apt-get upgrade`, the terminal had prompted me for configuration of some package which was never completed(because of intermittent internet connection).
 After logging in again I couldn't install using `apt` command.
 
 Error - `Could not get lock /var/lib/dpkg/lock`
@@ -467,7 +472,7 @@ Error - `Could not get lock /var/lib/dpkg/lock`
 
 **Solution**
 * Copy the machine host name.
-`cat /etc/hostname` 
+`cat /etc/hostname`
 * Add the hostname to the hosts file.
 `sudo nano /etc/hosts`
 * On the first line type in - `127.0.1.1 <machine-host-name>`
@@ -487,13 +492,13 @@ Error - `Could not get lock /var/lib/dpkg/lock`
 
 **Problem**: (sqlite3.OperationalError) attempt to write a readonly database.
 
-**Solution**: 
+**Solution**:
 Give write permission to database file.
 ```
 sudo chmod 666 /path/to/database/file.db
 ```
 
-#### 6. Threading problem 
+#### 6. Threading problem
 
 **Problem**: `SQLite objects created in a thread can only be used in that same thread`
 
@@ -515,6 +520,6 @@ Note: [Reference](http://stackoverflow.com/questions/34009296/using-sqlalchemy-s
 **Solution**: Worked after providing the absolute paths of both (Facebook as well as Google) JSON files in the application.
 
 
-### Extra 
+### Extra
 
 * [Glances](https://nicolargo.github.io/glances/) - System monitoring application
